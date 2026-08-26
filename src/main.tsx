@@ -1,166 +1,41 @@
-import React, { useState } from "react";
-import { createRoot } from "react-dom/client";
-import { Analytics } from "@vercel/analytics/react";
+import React from "react";
+import {createRoot} from "react-dom/client";
+import {Analytics} from "@vercel/analytics/react";
+import {BrowserRouter,Link,NavLink,Route,Routes,useParams} from "react-router-dom";
 import "./styles.css";
 
-type Project = {
-  title: string;
-  description: string;
-  stack: string[];
-  status: string;
-  type: string;
-  problem: string;
-  architecture: string;
-  evidence: string[];
-  nextSteps: string[];
-};
-
-const projects: Project[] = [
-  { title: "EngineerOS", description: "The portfolio and engineering operating system itself.", stack: ["React", "TypeScript", "Vite"], status: "Building", type: "Platform", problem: "Turn learning progress and shipped work into a public, evidence-based engineering record.", architecture: "A typed React single-page application built with Vite. The MVP keeps navigation and project data client-side while establishing the interface for a future API-backed platform.", evidence: ["Responsive portfolio interface", "Project vault and recruiter dashboard", "Production build and Vercel Analytics"], nextSteps: ["Add persistent project data", "Publish architecture diagrams", "Connect GitHub activity and deployment metrics"] },
-  { title: "Inventory System", description: "A production-oriented inventory platform with PostgreSQL-backed workflows.", stack: ["Python", "FastAPI", "PostgreSQL"], status: "Planned", type: "Backend", problem: "Give operators reliable stock visibility while preventing inconsistent inventory updates.", architecture: "A FastAPI service with PostgreSQL transactions, explicit inventory movements, and a React operations interface.", evidence: ["Requirements drafted", "Core entities identified", "Technology stack selected"], nextSteps: ["Model products and stock movements", "Design the REST API", "Implement transactional inventory updates"] },
-  { title: "Route Optimization", description: "Graph algorithms applied to delivery routing and path selection.", stack: ["Python", "Algorithms", "Graphs"], status: "Planned", type: "Algorithms", problem: "Find efficient delivery routes across a weighted road network under practical constraints.", architecture: "A Python graph engine that compares shortest-path strategies and exposes reproducible benchmarks and route visualizations.", evidence: ["Problem scope defined", "Algorithm candidates selected", "Benchmark goals documented"], nextSteps: ["Build graph data model", "Implement Dijkstra and A*", "Compare runtime and route quality"] },
-  { title: "School Management", description: "A full-stack management system covering students, classes and records.", stack: ["React", "FastAPI", "PostgreSQL"], status: "Planned", type: "Full Stack", problem: "Centralize student, class, attendance, and academic records without losing auditability.", architecture: "A React frontend backed by a modular FastAPI API and relational PostgreSQL model with role-based access.", evidence: ["Primary workflows mapped", "User roles identified", "Initial stack selected"], nextSteps: ["Define permissions matrix", "Design relational schema", "Prototype student enrollment workflow"] }
+type Project={slug:string;title:string;type:string;status:string;description:string;stack:string[];problem:string;architecture:string;evidence:string[];failures:string[]};
+const projects:Project[]=[
+ {slug:"engineer-os",title:"EngineerOS",type:"Platform",status:"BUILDING",description:"The evidence-first developer operating system.",stack:["React","TypeScript","Vite"],problem:"Developer portfolios make claims but rarely expose proof.",architecture:"A routed React frontend today, designed to grow into a FastAPI and PostgreSQL modular monolith.",evidence:["Responsive public dashboard","Routed technical records","Vercel Analytics","Verified production build"],failures:["Technical record controls were initially inert.","The first README promised more than the application demonstrated."]},
+ {slug:"inventory-system",title:"Inventory System",type:"Backend",status:"PLANNED",description:"Transactional stock control with an auditable movement ledger.",stack:["Python","FastAPI","PostgreSQL"],problem:"Stock updates become unreliable when systems overwrite totals without preserving movements.",architecture:"FastAPI modules, PostgreSQL transactions, append-only stock movements and a React operations UI.",evidence:["Domain boundaries identified","Core stack selected"],failures:["Implementation has not started; all metrics are targets."]},
+ {slug:"route-optimization",title:"Route Optimization",type:"Algorithms",status:"PLANNED",description:"Shortest-path research applied to delivery routing.",stack:["Python","Graphs","A*"],problem:"Choose efficient routes across a weighted network under practical constraints.",architecture:"A benchmark harness comparing Dijkstra and A* with reproducible graph datasets.",evidence:["Algorithm candidates selected","Benchmark questions documented"],failures:["Real road-network constraints are not yet modeled."]},
+ {slug:"school-platform",title:"School Platform",type:"Full stack",status:"PLANNED",description:"Students, classes, attendance and academic records.",stack:["React","FastAPI","PostgreSQL"],problem:"School records are fragmented and difficult to audit.",architecture:"A role-based React client over a FastAPI API and normalized PostgreSQL schema.",evidence:["Primary workflows mapped","Roles identified"],failures:["Permissions matrix remains incomplete."]}
 ];
+const skills=[["Python",55],["React",70],["SQL",52],["DevOps",30],["System Design",22]] as const;
+const designs=["Netflix","WhatsApp","Uber","YouTube","Banking System","Tax Platform"];
+const capstones=["Amazon Lite","ERP","Hospital System","School Platform","Tax Collection System","Citizen Portal","AI Support Agent"];
 
-type Page = "home" | "projects" | "dashboard" | "journal" | "record";
+function Layout(){return <div className="app"><header className="nav"><Link className="brand" to="/"><b>E</b>EngineerOS</Link><nav><NavLink to="/recruiter">Evidence</NavLink><NavLink to="/projects">Projects</NavLink><NavLink to="/dashboard">Journey</NavLink><NavLink to="/journal">Journal</NavLink></nav><a href="https://github.com/VictorMwatu-KE" target="_blank" rel="noreferrer">GitHub ↗</a></header><Routes><Route path="/" element={<Home/>}/><Route path="/recruiter" element={<Recruiter/>}/><Route path="/dashboard" element={<Dashboard/>}/><Route path="/projects" element={<Projects/>}/><Route path="/projects/:slug" element={<ProjectRecord/>}/><Route path="/system-design" element={<SystemDesign/>}/><Route path="/capstones" element={<Capstones/>}/><Route path="/interviews" element={<Interviews/>}/><Route path="/journal" element={<Journal/>}/><Route path="/admin" element={<Admin/>}/><Route path="*" element={<Page eyebrow="404" title="Record not found" text="This evidence does not exist yet."/>}/></Routes><footer>EngineerOS · Victor Huncho <span>Evidence over adjectives · 2026</span></footer></div>}
 
-const skills = [
-  ["Python", 55], ["JavaScript", 62], ["TypeScript", 48], ["React", 58],
-  ["SQL / PostgreSQL", 52], ["Git", 60], ["Docker", 30], ["System Design", 22]
-] as const;
+function Home(){return <><section className="hero shell"><small>● 12-MONTH ENGINEERING JOURNEY · IN PROGRESS</small><em>VICTOR MWATU · SOFTWARE ENGINEER</em><h1>Don’t trust the résumé.<br/><span>Inspect the evidence.</span></h1><p>A public operating system for everything I build, break, learn, deploy and document.</p><div className="actions"><Link className="primary" to="/recruiter">Open evidence dashboard</Link><Link className="secondary" to="/projects">Inspect projects</Link></div><div className="metrics">{[["0/25","Projects completed"],["0","Systems deployed"],["01/15","Current phase"],["0 days","Current streak"]].map(x=><div key={x[1]}><b>{x[0]}</b><span>{x[1]}</span></div>)}</div></section><section className="shell section"><Heading eyebrow="CURRENT PHASE" title="Computer Science Fundamentals" text="Week 2 of 6 · Foundations before frameworks."/><Progress n={32}/></section><section className="shell section"><Heading eyebrow="EVIDENCE LAYERS" title="A portfolio built for inspection"/><div className="features">{[["Systems","Architecture, deployments, coverage and metrics.","/projects"],["Engineering trail","Decisions, incidents, failures and lessons.","/journal"],["Capability","Skills, Git activity and interview preparation.","/recruiter"],["Design thinking","Capacity, tradeoffs and scaling analysis.","/system-design"]].map((x,i)=><Link to={x[2]} key={x[0]}><small>0{i+1}</small><h3>{x[0]}</h3><p>{x[1]}</p><b>Inspect →</b></Link>)}</div></section></>}
 
-function App() {
-  const [page, setPage] = useState<Page>("home");
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+function Recruiter(){return <Page eyebrow="PUBLIC ROUTE · /RECRUITER" title="Evidence dashboard" text="A transparent snapshot. Planned signals are never presented as shipped work."><div className="two"><Panel title="Skills matrix">{skills.map(([x,n])=><div className="skill" key={x}><span>{x}<b>{n}%</b></span><Progress n={n}/></div>)}</Panel><Panel title="GitHub activity"><Row x="Commits tracked" y="—"/><Row x="Pull requests" y="—"/><Row x="Public repositories" y="—"/><p className="note">Live GitHub data replaces placeholders when the integration ships.</p></Panel></div><h2 className="sub">Live systems</h2><div className="system"><b>● EngineerOS preview</b><span>PREVIEW</span><span>Response —</span><span>Uptime —</span></div><h2 className="sub">Public proof</h2><div className="proof">{[["1","Active build"],["0","Systems monitored"],["0","Incident reports"],["0","Certifications"]].map(x=><div key={x[1]}><b>{x[0]}</b><span>{x[1]}</span></div>)}</div></Page>}
 
-  const nav = (p: Page) => {
-    setPage(p);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+function Dashboard(){return <Page eyebrow="LEARNING DASHBOARD · MVP" title="Phase 1: Computer Science Fundamentals" text="Week 2 of 6 · 32% complete"><Panel title="Phase progress"><Progress n={32}/></Panel><div className="two"><Panel title="Topic tracker">{["Arrays","Linked lists","Stacks","Queues","Trees","Graphs"].map((x,i)=><label className="check" key={x}><input type="checkbox" defaultChecked={i<2}/>{x}</label>)}</Panel><Panel title="Journey map"><Row x="Current phase" y="01"/><Row x="Weeks logged" y="02"/><Row x="Projects shipped" y="00"/><Row x="Learning streak" y="0 days"/></Panel></div><div className="quick"><Link to="/system-design">System designs →</Link><Link to="/capstones">Capstones →</Link><Link to="/interviews">Interviews →</Link><Link to="/admin">Admin preview →</Link></div></Page>}
 
-  const openRecord = (project: Project) => {
-    setSelectedProject(project);
-    nav("record");
-  };
+function Projects(){return <Page eyebrow="PROJECT VAULT" title="Systems, not screenshots" text="Each record separates implemented evidence from targets and plans."><div className="projects">{projects.map(p=><article key={p.slug}><header><span>{p.type}</span><b className={p.status==="BUILDING"?"live":""}>{p.status}</b></header><h2>{p.title}</h2><p>{p.description}</p><div className="stack">{p.stack.map(x=><span key={x}>{x}</span>)}</div><small>{p.status==="BUILDING"?"BUILD VERIFIED · PREVIEW LIVE":"TARGETS · NOT DEPLOYED"}</small><Link to={`/projects/${p.slug}`}>Open technical record →</Link></article>)}</div></Page>}
+function ProjectRecord(){const p=projects.find(x=>x.slug===useParams().slug);if(!p)return <Page eyebrow="404" title="Record not found" text="No project matches this URL."/>;return <Page eyebrow={`TECHNICAL RECORD · ${p.type}`} title={p.title} text={p.description}><Link className="back" to="/projects">← All projects</Link><div className="record"><main><Section n="01" title="Problem"><p>{p.problem}</p></Section><Section n="02" title="Architecture"><p>{p.architecture}</p><div className="diagram"><span>React</span>→<span>FastAPI</span>→<span>PostgreSQL</span></div></Section><Section n="03" title="Evidence"><ul>{p.evidence.map(x=><li key={x}>{x}</li>)}</ul></Section><Section n="04" title="Failures & lessons"><ul>{p.failures.map(x=><li key={x}>{x}</li>)}</ul></Section></main><aside><b className={p.status==="BUILDING"?"live":""}>{p.status}</b><Row x="Deployment" y={p.status==="BUILDING"?"Preview":"None"}/><Row x="Coverage" y={p.status==="BUILDING"?"Build verified":"Target"}/><div className="stack">{p.stack.map(x=><span key={x}>{x}</span>)}</div></aside></div></Page>}
 
-  return (
-    <div className="app">
-      <header className="nav">
-        <button className="brand" onClick={() => nav("home")}>
-          <span className="brand-mark">E</span>
-          <span>EngineerOS</span>
-        </button>
-        <nav>
-          <button onClick={() => nav("projects")}>Projects</button>
-          <button onClick={() => nav("dashboard")}>Dashboard</button>
-          <button onClick={() => nav("journal")}>Journal</button>
-        </nav>
-        <a className="github" href="https://github.com/" target="_blank" rel="noreferrer">GitHub ↗</a>
-      </header>
+function SystemDesign(){return <Page eyebrow="SYSTEM DESIGN" title="Architecture under pressure" text="Capacity, constraints, tradeoffs and failure modes."><div className="designs">{designs.map((x,i)=><article key={x}><small>CASE STUDY 0{i+1}</small><h2>{x}</h2><p>Architecture · scaling · capacity · tradeoffs</p><b>PLANNED</b></article>)}</div></Page>}
+function Capstones(){return <Page eyebrow="CAPSTONE TRACKER" title="Seven systems. Full lifecycle." text="Architecture, implementation, tests, deployment and documentation."><div className="list">{capstones.map((x,i)=><div key={x}><span>0{i+1}</span><b>{x}</b><Progress n={i===3?8:0}/><small>{i===3?"DISCOVERY":"QUEUED"}</small></div>)}</div></Page>}
+function Interviews(){return <Page eyebrow="INTERVIEW TRACKER" title="Preparation without vanity metrics" text="Numbers update only when evidence is logged."><div className="proof">{[["0","LeetCode solved"],["0","Mock interviews"],["0","System designs"],["0","Debugging challenges"]].map(x=><div key={x[1]}><b>{x[0]}</b><span>{x[1]}</span></div>)}</div><Panel title="Preparation lanes"><Row x="Algorithms" y="STARTED"/><Row x="System design" y="PLANNED"/><Row x="Behavioral stories" y="PLANNED"/><Row x="Debugging drills" y="PLANNED"/></Panel></Page>}
+function Journal(){return <Page eyebrow="ENGINEERING JOURNAL" title="The work behind the work" text="Decisions, bugs, incidents and lessons—not polished hindsight."><article className="journal"><small>DAY 001 · BUILD LOG</small><h2>Turned project labels into inspectable records.</h2><dl><dt>Problem</dt><dd>Technical record controls looked interactive but did nothing.</dd><dt>Root cause</dt><dd>The MVP only changed state for top-level navigation.</dd><dt>Solution</dt><dd>Added routed, data-driven records with evidence and failure sections.</dd><dt>Lesson</dt><dd>An interface promise is still a promise.</dd></dl></article></Page>}
+function Admin(){return <Page eyebrow="PRIVATE ROUTE · PREVIEW" title="Control room" text="Authentication and persistence are required before these controls become operational."><div className="admin">{["Update progress","Add project evidence","Publish journal","Upload diagram","Add certification","Record deployment"].map(x=><button disabled key={x}>{x}<small>BACKEND REQUIRED</small></button>)}</div></Page>}
 
-      <main>
-        {page === "home" && <Home nav={nav} openRecord={openRecord} />}
-        {page === "projects" && <Projects openRecord={openRecord} />}
-        {page === "dashboard" && <Dashboard />}
-        {page === "journal" && <Journal />}
-        {page === "record" && selectedProject && <TechnicalRecord project={selectedProject} onBack={() => nav("projects")} />}
-      </main>
-
-      <footer>
-        <span>EngineerOS · Victor Mwatu</span>
-        <span>Built to show evidence, not adjectives.</span>
-      </footer>
-    </div>
-  );
-}
-
-function Home({ nav, openRecord }: { nav: (p: Page) => void; openRecord: (project: Project) => void }) {
-  return (
-    <>
-      <section className="hero shell">
-        <div className="eyebrow">SOFTWARE ENGINEERING PORTFOLIO · 2026</div>
-        <h1>I build software.<br /><span>I document the evidence.</span></h1>
-        <p className="hero-copy">
-          EngineerOS is my public engineering record: systems shipped, technical decisions,
-          learning progress, failures, experiments and production thinking.
-        </p>
-        <div className="actions">
-          <button className="primary" onClick={() => nav("projects")}>Explore projects</button>
-          <button className="secondary" onClick={() => nav("dashboard")}>Open recruiter view</button>
-        </div>
-        <div className="hero-metrics">
-          <Metric value="01" label="Live MVP" />
-          <Metric value="15" label="Engineering phases" />
-          <Metric value="25" label="Target systems" />
-          <Metric value="∞" label="Things to break and fix" />
-        </div>
-      </section>
-
-      <section className="shell section">
-        <div className="section-head"><div><span className="eyebrow">CURRENT MISSION</span><h2>From learner to engineer.</h2></div></div>
-        <div className="mission-grid">
-          <Card number="01" title="Learn" text="Computer science fundamentals, professional programming and engineering practices." />
-          <Card number="02" title="Build" text="Complete systems instead of collecting another graveyard of tutorial certificates." />
-          <Card number="03" title="Ship" text="Deploy, test, monitor, document and explain the software in public." />
-        </div>
-      </section>
-
-      <section className="shell section">
-        <div className="section-head">
-          <div><span className="eyebrow">FEATURED WORK</span><h2>Systems in the pipeline.</h2></div>
-          <button className="text-btn" onClick={() => nav("projects")}>View all →</button>
-        </div>
-        <div className="project-grid">{projects.slice(0,3).map(p => <ProjectCard key={p.title} project={p} onOpen={openRecord} />)}</div>
-      </section>
-    </>
-  );
-}
-
-function Dashboard() {
-  return (
-    <section className="shell page">
-      <div className="page-title"><span className="eyebrow">RECRUITER VIEW</span><h1>Engineering Dashboard</h1><p>A transparent snapshot of what is being learned, built and shipped.</p></div>
-      <div className="dashboard-top">
-        <div className="big-card">
-          <span className="eyebrow">CURRENT PHASE</span>
-          <h2>Computer Science Fundamentals</h2>
-          <div className="progress"><span style={{width:"18%"}} /></div>
-          <div className="progress-label"><span>Phase 1 of 15</span><strong>18%</strong></div>
-          <p>Data structures · algorithms · complexity · systems fundamentals</p>
-        </div>
-        <div className="stat-card"><small>PROJECTS</small><strong>1</strong><span>active build</span></div>
-        <div className="stat-card"><small>DEPLOYMENTS</small><strong>0</strong><span>target: every major system</span></div>
-      </div>
-      <div className="dashboard-grid">
-        <section className="panel"><div className="panel-head"><h3>Skills matrix</h3><span>demonstrated progress</span></div>{skills.map(([name,val]) => <div className="skill" key={name}><div><span>{name}</span><b>{val}%</b></div><div className="progress"><span style={{width:`${val}%`}} /></div></div>)}</section>
-        <section className="panel"><div className="panel-head"><h3>Engineering evidence</h3><span>portfolio signals</span></div><Evidence label="Projects documented" value="4" /><Evidence label="System designs" value="0" /><Evidence label="Journal entries" value="0" /><Evidence label="Production incidents" value="0" /><Evidence label="Mock interviews" value="0" /></section>
-      </div>
-    </section>
-  );
-}
-
-function Projects({ openRecord }: { openRecord: (project: Project) => void }) {
-  return <section className="shell page"><div className="page-title"><span className="eyebrow">PROJECT VAULT</span><h1>Things being built.</h1><p>Every project will eventually expose requirements, architecture, tests, deployment, metrics and lessons learned.</p></div><div className="project-grid">{projects.map(p => <ProjectCard key={p.title} project={p} onOpen={openRecord} />)}</div></section>;
-}
-
-function TechnicalRecord({ project, onBack }: { project: Project; onBack: () => void }) {
-  return <section className="shell page record-page"><button className="back-btn" onClick={onBack}>← Back to projects</button><div className="record-header"><div><span className="eyebrow">TECHNICAL RECORD · {project.type.toUpperCase()}</span><h1>{project.title}</h1><p>{project.description}</p></div><span className="record-status">{project.status}</span></div><div className="record-grid"><article className="record-main"><RecordSection number="01" title="Problem" text={project.problem} /><RecordSection number="02" title="Architecture" text={project.architecture} /><div className="record-section"><span>03</span><div><h2>Engineering evidence</h2><ul>{project.evidence.map(item => <li key={item}>{item}</li>)}</ul></div></div><div className="record-section"><span>04</span><div><h2>Next steps</h2><ol>{project.nextSteps.map(item => <li key={item}>{item}</li>)}</ol></div></div></article><aside className="record-sidebar"><span className="eyebrow">STACK</span><div className="record-stack">{project.stack.map(item => <span key={item}>{item}</span>)}</div><div className="record-meta"><span>Status</span><strong>{project.status}</strong><span>Category</span><strong>{project.type}</strong></div></aside></div></section>;
-}
-
-function RecordSection({ number, title, text }: { number: string; title: string; text: string }) { return <div className="record-section"><span>{number}</span><div><h2>{title}</h2><p>{text}</p></div></div>; }
-
-function Journal() {
-  return <section className="shell page"><div className="page-title"><span className="eyebrow">ENGINEERING JOURNAL</span><h1>Build in public.</h1><p>Decisions, bugs, failures and lessons. The boring stuff that turns syntax knowledge into engineering experience.</p></div><div className="empty-journal"><span className="journal-icon">∿</span><h2>First entry pending.</h2><p>The journal becomes useful when something breaks. Fortunately, software has never struggled to provide opportunities.</p></div></section>;
-}
-
-function Metric({value,label}:{value:string;label:string}) { return <div><strong>{value}</strong><span>{label}</span></div>; }
-function Card({number,title,text}:{number:string;title:string;text:string}) { return <article className="info-card"><span>{number}</span><h3>{title}</h3><p>{text}</p></article>; }
-function Evidence({label,value}:{label:string;value:string}) { return <div className="evidence"><span>{label}</span><strong>{value}</strong></div>; }
-function ProjectCard({project,onOpen}:{project:Project;onOpen:(project:Project)=>void}) { return <article className="project-card"><div className="project-top"><span className="tag">{project.type}</span><span className="status">{project.status}</span></div><h3>{project.title}</h3><p>{project.description}</p><div className="stack">{project.stack.map(s=><span key={s}>{s}</span>)}</div><button className="text-btn" onClick={() => onOpen(project)} aria-label={`Open technical record for ${project.title}`}>Technical record →</button></article>; }
-
-createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <App />
-    <Analytics />
-  </React.StrictMode>
-);
+function Page({eyebrow,title,text,children}:{eyebrow:string;title:string;text:string;children?:React.ReactNode}){return <section className="shell page"><Heading eyebrow={eyebrow} title={title} text={text}/>{children}</section>}
+function Heading({eyebrow,title,text}:{eyebrow:string;title:string;text?:string}){return <header className="heading"><small>{eyebrow}</small><h1>{title}</h1>{text&&<p>{text}</p>}</header>}
+function Panel({title,children}:{title:string;children:React.ReactNode}){return <section className="panel"><h2>{title}</h2>{children}</section>}
+function Progress({n}:{n:number}){return <div className="progress"><span style={{width:`${n}%`}}/></div>}
+function Row({x,y}:{x:string;y:string}){return <div className="row"><span>{x}</span><b>{y}</b></div>}
+function Section({n,title,children}:{n:string;title:string;children:React.ReactNode}){return <section className="record-section"><small>{n}</small><div><h2>{title}</h2>{children}</div></section>}
+createRoot(document.getElementById("root")!).render(<React.StrictMode><BrowserRouter><Layout/><Analytics/></BrowserRouter></React.StrictMode>);
