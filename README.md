@@ -1,4 +1,4 @@
-EngineerOS
+Professional Learning Dashboard
 
 «A full-stack software engineering portfolio and learning platform built to demonstrate real-world engineering ability through shipped systems, measurable progress, technical case studies, and production experience.»
 
